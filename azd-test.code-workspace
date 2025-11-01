@@ -1,0 +1,21 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+    ],
+    "settings": {
+        "dotenv.enableAutocloaking": false,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+        },
+        "git.autorefresh": true,
+        "terminal.integrated.cwd": "${workspaceFolder}",
+    },
+    "extensions": {
+        "recommendations": [
+            "EditorConfig.EditorConfig"
+        ]
+    }
+}
