@@ -1,1 +1,8 @@
-.azure
+# Azure Developer CLI
+.azure/*
+!.azure/.gitignore
+!.azure/config.json
+
+# OS
+.DS_Store
+Thumbs.db
