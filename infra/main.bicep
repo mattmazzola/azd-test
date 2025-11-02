@@ -9,38 +9,42 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+param pythonClientAppName string = 'python-client'
+
 @description('Container image for python-client service')
 param pythonClientImageName string = ''
+var defaultImageName = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
-// Generate a unique token for resource names
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = {
   'azd-env-name': environmentName
 }
 
-// Create the resource group
+resource sharedRg 'Microsoft.Resources/resourceGroups@2025-04-01' existing = {
+  name: 'shared'
+}
+
+resource sharedContainerAppsEnv 'Microsoft.App/managedEnvironments@2025-02-02-preview' existing = {
+  name: 'shared-containerappsenv'
+  scope: sharedRg
+}
+
 resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: 'rg-azd-test-${environmentName}'
   location: location
   tags: tags
 }
 
-// Reference to existing shared Container Apps Environment
-var containerAppsEnvResourceId = '/subscriptions/375b0f6d-8ad5-412d-9e11-15d36d14dc63/resourceGroups/shared/providers/Microsoft.App/managedEnvironments/shared-containerappsenv'
-
-// Deploy the container app in the resource group
 module containerApp 'app.bicep' = {
   name: 'container-app-deployment'
   scope: rg
   params: {
-    name: 'ca-python-client-${resourceToken}'
+    name: 'ca-${pythonClientAppName}-${resourceToken}'
     location: location
-    tags: union(tags, { 'azd-service-name': 'python-client' })
-    containerAppsEnvResourceId: containerAppsEnvResourceId
-    containerImage: !empty(pythonClientImageName)
-      ? pythonClientImageName
-      : 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
-    containerRegistryResourceGroup: 'shared'
+    tags: union(tags, { 'azd-service-name': pythonClientAppName })
+    containerAppsEnvResourceId: sharedContainerAppsEnv.id
+    containerImage: !empty(pythonClientImageName) ? pythonClientImageName : defaultImageName
+    containerRegistryResourceGroup: sharedRg.name
     containerRegistryName: 'sharedklgoyiacr'
   }
 }
@@ -49,5 +53,7 @@ module containerApp 'app.bicep' = {
 output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId
 output AZURE_RESOURCE_GROUP string = rg.name
+
+// Outputs for the services
 output SERVICE_PYTHON_CLIENT_NAME string = containerApp.outputs.name
 output SERVICE_PYTHON_CLIENT_ENDPOINT string = containerApp.outputs.appUrl
