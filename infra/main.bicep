@@ -15,37 +15,50 @@ param pythonClientAppName string = 'python-client'
 param pythonClientImageName string = ''
 var defaultImageName = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
+param sharedRgName string
+param sharedContainerAppsEnvironmentName string
+param sharedAcrName string
+
+resource sharedRg 'Microsoft.Resources/resourceGroups@2025-04-01' existing = {
+  name: sharedRgName
+}
+
+var sharedRgToken = take(uniqueString(sharedRg.id), 6)
+
+resource sharedContainerAppsEnv 'Microsoft.App/managedEnvironments@2025-02-02-preview' existing = {
+  name: sharedContainerAppsEnvironmentName
+  scope: sharedRg
+}
+
+resource sharedAcr 'Microsoft.ContainerRegistry/registries@2025-05-01-preview' existing = {
+  name: sharedAcrName
+  scope: sharedRg
+}
+
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = {
   'azd-env-name': environmentName
 }
 
-resource sharedRg 'Microsoft.Resources/resourceGroups@2025-04-01' existing = {
-  name: 'shared'
-}
-
-resource sharedContainerAppsEnv 'Microsoft.App/managedEnvironments@2025-02-02-preview' existing = {
-  name: 'shared-containerappsenv'
-  scope: sharedRg
-}
+var rgSlug = 'azd-test'
 
 resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
-  name: 'rg-azd-test-${environmentName}'
+  name: 'rg-${rgSlug}-${environmentName}'
   location: location
   tags: tags
 }
 
 module containerApp 'app.bicep' = {
-  name: 'container-app-deployment'
+  name: 'containerAppModule'
   scope: rg
   params: {
-    name: 'ca-${pythonClientAppName}-${resourceToken}'
+    name: 'ca-${rgSlug}-${pythonClientAppName}'
     location: location
     tags: union(tags, { 'azd-service-name': pythonClientAppName })
     containerAppsEnvResourceId: sharedContainerAppsEnv.id
     containerImage: !empty(pythonClientImageName) ? pythonClientImageName : defaultImageName
     containerRegistryResourceGroup: sharedRg.name
-    containerRegistryName: 'sharedklgoyiacr'
+    containerRegistryName: sharedAcr.name
   }
 }
 

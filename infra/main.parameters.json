@@ -10,6 +10,15 @@
     },
     "pythonClientImageName": {
       "value": "${SERVICE_PYTHON_CLIENT_IMAGE_NAME}"
+    },
+    "sharedRgName": {
+      "value": "${SHARED_RG_NAME=shared}"
+    },
+    "sharedContainerAppsEnvironmentName": {
+      "value": "${SHARED_CONTAINER_APPS_ENVIRONMENT_NAME=shared-containerappsenv}"
+    },
+    "sharedAcrName": {
+      "value": "${SHARED_ACR_NAME=sharedklgoyiacr}"
     }
   }
 }
