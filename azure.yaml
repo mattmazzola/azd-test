@@ -4,6 +4,8 @@ name: azd-test
 
 infra:
   path: infra
+  provider: bicep
+  module: main
 
 hooks:
   preup:
