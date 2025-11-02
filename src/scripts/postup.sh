@@ -1,4 +1,7 @@
 #!/bin/bash
-set -ex
+set -e
+
+echo "--- HOOK: postup ---"
+env | grep AZURE || true
 
 echo "Post Up"

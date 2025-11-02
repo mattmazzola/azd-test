@@ -1,8 +1,7 @@
 #!/usr/bin/env sh
-set -ex
+set -e
 
 echo "--- HOOK: preup ---"
-env | grep AZD || true
-
+env | grep AZURE || true
 
 echo "preup complete"

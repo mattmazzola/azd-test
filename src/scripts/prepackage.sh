@@ -1,10 +1,8 @@
 #!/usr/bin/env sh
 
-set -ex
+set -e
 
 echo "--- HOOK: prepackage ---"
-echo "Packaging step (build context)"
-env | grep AZD || true
-
+env | grep AZURE || true
 
 echo "prepackage complete"

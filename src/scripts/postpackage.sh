@@ -1,10 +1,8 @@
 #!/usr/bin/env sh
 
-set -ex
+set -e
 
 echo "--- HOOK: postpackage ---"
-echo "Package step finished"
-env | grep AZD || true
-
+env | grep AZURE || true
 
 echo "postpackage complete"
