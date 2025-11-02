@@ -6,18 +6,27 @@ infra:
   path: infra
 
 hooks:
+  preup:
+    shell: sh
+    run: ./src/scripts/preup.sh
+  postup:
+    shell: sh
+    run: ./src/scripts/postup.sh
+
   preprovision:
     shell: sh
     run: ./src/scripts/preprovision.sh
   postprovision:
     shell: sh
     run: ./src/scripts/postprovision.sh
+
   predeploy:
     shell: sh
     run: ./src/scripts/predeploy.sh
   postdeploy:
     shell: sh
     run: ./src/scripts/postdeploy.sh
+
   prepackage:
     shell: sh
     run: ./src/scripts/prepackage.sh
