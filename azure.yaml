@@ -1,0 +1,35 @@
+# yaml-languageserver: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: azd-test
+
+infra:
+  path: infra
+
+hooks:
+  preprovision:
+    shell: sh
+    run: ./src/scripts/preprovision.sh
+  postprovision:
+    shell: sh
+    run: ./src/scripts/postprovision.sh
+  predeploy:
+    shell: sh
+    run: ./src/scripts/predeploy.sh
+  postdeploy:
+    shell: sh
+    run: ./src/scripts/postdeploy.sh
+  prepackage:
+    shell: sh
+    run: ./src/scripts/prepackage.sh
+  postpackage:
+    shell: sh
+    run: ./src/scripts/postpackage.sh
+
+services:
+  app:
+    project: ./src/apps/client
+    host: containerapp
+    language: docker
+    docker:
+      path: ./Dockerfile
+      context: .
