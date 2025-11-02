@@ -45,3 +45,4 @@ services:
     docker:
       path: ./Dockerfile
       context: .
+      registry: ${AZURE_CONTAINER_REGISTRY_ENDPOINT}
