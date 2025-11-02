@@ -1,6 +1,6 @@
 #! /bin/bash
 
-set -ex
+set -e
 
 echo "Print OS and Tool Versions"
 lsb_release -a

@@ -4,20 +4,21 @@ name: azd-test
 
 infra:
   path: infra
+  provider: bicep
+  module: main
 
 hooks:
+  preup:
+    shell: sh
+    run: ./src/scripts/preup.sh
+
   preprovision:
     shell: sh
     run: ./src/scripts/preprovision.sh
   postprovision:
     shell: sh
     run: ./src/scripts/postprovision.sh
-  predeploy:
-    shell: sh
-    run: ./src/scripts/predeploy.sh
-  postdeploy:
-    shell: sh
-    run: ./src/scripts/postdeploy.sh
+
   prepackage:
     shell: sh
     run: ./src/scripts/prepackage.sh
@@ -25,11 +26,23 @@ hooks:
     shell: sh
     run: ./src/scripts/postpackage.sh
 
+  predeploy:
+    shell: sh
+    run: ./src/scripts/predeploy.sh
+  postdeploy:
+    shell: sh
+    run: ./src/scripts/postdeploy.sh
+
+  postup:
+    shell: sh
+    run: ./src/scripts/postup.sh
+
 services:
-  app:
+  python-client:
     project: ./src/apps/client
     host: containerapp
     language: docker
     docker:
       path: ./Dockerfile
       context: .
+      registry: ${AZURE_CONTAINER_REGISTRY_ENDPOINT}

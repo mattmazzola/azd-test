@@ -1,9 +1,7 @@
 #!/usr/bin/env sh
-set -ex
+set -e
 
 echo "--- HOOK: predeploy ---"
-echo "About to run azd deploy steps"
-env | grep AZD || true
-
+env | grep AZURE || true
 
 echo "predeploy complete"
