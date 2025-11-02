@@ -10,7 +10,11 @@ param containerCpuCoreCount string = '0.25'
 param containerMemory string = '0.5Gi'
 param minReplicas int = 0
 param maxReplicas int = 1
+
+param containerRegistryResourceGroup string
 param containerRegistryName string
+
+var passwordSecretName = 'registry-password'
 
 resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
   name: name
@@ -27,13 +31,16 @@ resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
         {
           server: '${containerRegistryName}.azurecr.io'
           username: containerRegistryName
-          passwordSecretRef: 'registry-password'
+          passwordSecretRef: passwordSecretName
         }
       ]
       secrets: [
         {
-          name: 'registry-password'
-          value: listCredentials(resourceId('shared', 'Microsoft.ContainerRegistry/registries', containerRegistryName), '2023-01-01-preview').passwords[0].value
+          name: passwordSecretName
+          value: listCredentials(
+            resourceId(containerRegistryResourceGroup, 'Microsoft.ContainerRegistry/registries', containerRegistryName),
+            '2025-05-01-preview'
+          ).passwords[0].value
         }
       ]
     }
@@ -46,6 +53,26 @@ resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
             cpu: json(containerCpuCoreCount)
             memory: containerMemory
           }
+          probes: [
+            {
+              type: 'Liveness'
+              httpGet: {
+                path: '/health'
+                port: targetPort
+              }
+              initialDelaySeconds: 10
+              periodSeconds: 10
+            }
+            {
+              type: 'Readiness'
+              httpGet: {
+                path: '/health'
+                port: targetPort
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 5
+            }
+          ]
         }
       ]
       scale: {
@@ -55,8 +82,6 @@ resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
     }
   }
 }
-
-
 
 output id string = containerApp.id
 output name string = containerApp.name

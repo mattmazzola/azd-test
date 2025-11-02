@@ -37,7 +37,10 @@ module containerApp 'app.bicep' = {
     location: location
     tags: union(tags, { 'azd-service-name': 'python-client' })
     containerAppsEnvResourceId: containerAppsEnvResourceId
-    containerImage: !empty(pythonClientImageName) ? pythonClientImageName : 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+    containerImage: !empty(pythonClientImageName)
+      ? pythonClientImageName
+      : 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+    containerRegistryResourceGroup: 'shared'
     containerRegistryName: 'sharedklgoyiacr'
   }
 }
