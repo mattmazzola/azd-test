@@ -28,12 +28,6 @@ resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
 // Reference to existing shared Container Apps Environment
 var containerAppsEnvResourceId = '/subscriptions/375b0f6d-8ad5-412d-9e11-15d36d14dc63/resourceGroups/shared/providers/Microsoft.App/managedEnvironments/shared-containerappsenv'
 
-// Reference to existing ACR (in shared resource group)
-resource acr 'Microsoft.ContainerRegistry/registries@2025-05-01-preview' existing = {
-  name: 'sharedklgoyiacr'
-  scope: resourceGroup('shared')
-}
-
 // Deploy the container app in the resource group
 module containerApp 'app.bicep' = {
   name: 'container-app-deployment'
@@ -44,18 +38,7 @@ module containerApp 'app.bicep' = {
     tags: union(tags, { 'azd-service-name': 'python-client' })
     containerAppsEnvResourceId: containerAppsEnvResourceId
     containerImage: !empty(pythonClientImageName) ? pythonClientImageName : 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
-    acrName: acr.name
-    acrResourceGroup: 'shared'
-  }
-}
-
-// Grant the Container App's managed identity AcrPull role on the ACR
-module acrRoleAssignment 'acr-role.bicep' = {
-  name: 'acr-role-assignment'
-  scope: resourceGroup('shared')
-  params: {
-    acrName: acr.name
-    principalId: containerApp.outputs.principalId
+    containerRegistryName: 'sharedklgoyiacr'
   }
 }
 
