@@ -4,6 +4,7 @@ set -e
 
 echo "Print OS and Tool Versions"
 lsb_release -a
+git --version
 az version
 az bicep version
 azd version

@@ -9,12 +9,6 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
-param pythonClientAppName string = 'python-client'
-
-@description('Container image for python-client service')
-param pythonClientImageName string = ''
-var defaultImageName = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
-
 param sharedRgName string
 param sharedContainerAppsEnvironmentName string
 param sharedAcrName string
@@ -47,6 +41,10 @@ resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   location: location
   tags: tags
 }
+
+param pythonClientAppName string = 'python-client'
+param pythonClientImageName string = ''
+var defaultImageName = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
 module containerApp 'app.bicep' = {
   name: 'containerAppModule'
